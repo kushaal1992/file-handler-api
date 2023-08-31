@@ -95,6 +95,7 @@ function getSignedURL(filename) {
 // v2
 function uploadToS3(dirname) {
   try {
+    console.log("Uploading")
     const s3 = new AWS.S3({
       // endpoint: "s3-ap-south-1.amazonaws.com",
       accessKeyId: "AKIAZDHWLVNJUUTAGIWY",
@@ -104,10 +105,13 @@ function uploadToS3(dirname) {
       region: "ap-south-1",
     });
     let promiseArr = [];
-    const filenames = fs.readdirSync(assetPath + "/Images");
+    // const filenames = fs.readdirSync(assetPath + "/Images");
+    console.log(`${assetPath}/${dirname}`)
+    const filenames = fs.readdirSync(`${assetPath}/${dirname}`);
     console.log("filenames", filenames);
     filenames.forEach(async (fileName, i) => {
-      const buffer = fs.readFileSync(assetPath + "/Images/" + fileName);
+      // const buffer = fs.readFileSync(assetPath + "/Images/" + fileName);
+      const buffer = fs.readFileSync(`${assetPath}/${dirname}/${fileName}`);
       console.log("buffer");
       const params = {
         Bucket: "ivs-edu-book-pdf-v1",
@@ -119,6 +123,7 @@ function uploadToS3(dirname) {
     });
     return Promise.all(promiseArr);
   } catch (error) {
+    console.log("S3UTILS", error.message)
     return {
       message: "Failed! Unable to upload to S3",
       error: error.message,

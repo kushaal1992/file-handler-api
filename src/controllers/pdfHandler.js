@@ -82,10 +82,13 @@ const assetPath = path.resolve(__dirname, `../../public/assets`);
 //V2
 async function pdfToImg(filename) {
   try {
+    if (!fs.existsSync(`${assetPath}/${filename}`)) {
+      fs.mkdirSync(`${assetPath}/${filename}`);
+    }
     const options = {
       density: 100,
       saveFilename: filename,
-      savePath: assetPath + "/Images/",
+      savePath: `${assetPath}/${filename}`,
       format: "png",
       width: 600,
       height: 600,
@@ -94,7 +97,7 @@ async function pdfToImg(filename) {
     const pdfPath = path.resolve(__dirname, `${assetPath}/${filename}.pdf`);
     console.log("pdfPath", pdfPath);
     return new Promise((resolve, reject) => {
-      console.log("Converting")
+      console.log("Converting");
       fromPath(pdfPath, options)
         .bulk(-1, { responseType: "image" })
         .then((pdfToImgRes) => {
@@ -102,7 +105,8 @@ async function pdfToImg(filename) {
             message: "Success! PDF Converted To Images",
             data: pdfToImgRes,
           });
-        }).catch((err) => console.log("err", err.message))
+        })
+        .catch((err) => console.log("err", err.message))
         .catch((err) => {
           return reject({
             message: `Failed! Unable to convert Page `,

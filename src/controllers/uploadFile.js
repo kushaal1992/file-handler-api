@@ -103,24 +103,29 @@ async function uploadPDF(req, res) {
             });
           } else {
             // Upload to S3 and get Presigned URL of 1st Page of PDF(png1)
+            try {
+              
             s3Utils
-              .uploadToS3(result.data, filename)
-              .then((data) => {
-                console.log("data", data);
-                  return res.status(200).json({
-                    status: 200,
-                    message: "All Files uploaded to S3",
-                    data: [],
-                    count: result.data.length,
-                  });
-              })
-              .catch((err) => {
-                return res.status(500).json({
-                  status: 500,
-                  message: "Failed!",
-                  error: err.message,
+            .uploadToS3(filename)
+            .then((data) => {
+              console.log("data", data);
+                return res.status(200).json({
+                  status: 200,
+                  message: "All Files uploaded to S3",
+                  data: [],
+                  count: result.data.length,
                 });
+            })
+            .catch((err) => {
+              return res.status(500).json({
+                status: 500,
+                message: "Failed!",
+                error: err.message,
               });
+            });
+            } catch (error) {
+              console.log("Error", error.message)
+            }
           }
         });
       }
