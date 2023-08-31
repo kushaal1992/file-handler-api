@@ -107,19 +107,12 @@ async function uploadPDF(req, res) {
               .uploadToS3(result.data, filename)
               .then((data) => {
                 console.log("data", data);
-                if (data.length == result.data.length) {
                   return res.status(200).json({
                     status: 200,
                     message: "All Files uploaded to S3",
                     data: [],
                     count: result.data.length,
                   });
-                }
-                return res.status(500).json({
-                  status: 500,
-                  message: "All Files not Uploaded!",
-                  error: "All Files not Uploaded!",
-                });
               })
               .catch((err) => {
                 return res.status(500).json({
