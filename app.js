@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const AWS = require("aws-sdk");
-const http = require("http").Server(app);
+
 
 const signedURLRoute = require("./src/routes/signedS3Url");
 const uploadRoute = require("./src/routes/uploadPDF");
@@ -10,6 +10,7 @@ const uploadRoute = require("./src/routes/uploadPDF");
 const pdfToImg = require("./src/controllers/pdfHandler").pdfToImg;
 
 const app = express();
+const http = require("http").Server(app);
 const port = 3001;
 
 app.use(express.json());
