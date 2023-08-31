@@ -1,12 +1,12 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-const AWS = require("aws-sdk");
 
 
 const signedURLRoute = require("./src/routes/signedS3Url");
 const uploadRoute = require("./src/routes/uploadPDF");
 const saveImageS3Route = require("./src/routes/saveImageS3");
+const pdfRoute = require("./src/routes/pdf.route");
 
 const pdfToImg = require("./src/controllers/pdfHandler").pdfToImg;
 
@@ -22,6 +22,7 @@ app.use(cors({ origin: "*" }));
 app.use("/", signedURLRoute);
 app.use("/", uploadRoute);
 app.use("/", saveImageS3Route)
+app.use("/", pdfRoute)
 
 process.on("uncaughtException", function (err) {
   console.log(err);
@@ -38,15 +39,5 @@ http.listen(port, (err) => {
   return console.log(`Server listening on ${port}`);
 });
 
-// pdfToImg("file-sample_150kB")
-
-// pdfToImg("Free_Test_Data_500KB_PDF");
-// imgToPDF();
-
-// getSignedURL().then((data) => {
-//     console.log(data)
-// }).catch((err) => {
-//     console.log("err", err.message)
-// });
 
 module.exports = app;

@@ -95,7 +95,7 @@ function getSignedURL(filename) {
 // v2
 function uploadToS3(dirname) {
   try {
-    console.log("Uploading")
+    console.log("Uploading");
     const s3 = new AWS.S3({
       // endpoint: "s3-ap-south-1.amazonaws.com",
       accessKeyId: "AKIAZDHWLVNJUUTAGIWY",
@@ -106,7 +106,7 @@ function uploadToS3(dirname) {
     });
     let promiseArr = [];
     // const filenames = fs.readdirSync(assetPath + "/Images");
-    console.log(`${assetPath}/${dirname}`)
+    console.log(`${assetPath}/${dirname}`);
     const filenames = fs.readdirSync(`${assetPath}/${dirname}`);
     console.log("filenames", filenames);
     filenames.forEach(async (fileName, i) => {
@@ -115,7 +115,7 @@ function uploadToS3(dirname) {
       console.log("buffer");
       const params = {
         Bucket: "ivs-edu-book-pdf-v1",
-        Key: `${fileName}`,
+        Key: `${dirname}/${fileName}`,
         Body: buffer,
         // ContentType: "png",
       };
@@ -123,7 +123,7 @@ function uploadToS3(dirname) {
     });
     return Promise.all(promiseArr);
   } catch (error) {
-    console.log("S3UTILS", error.message)
+    console.log("S3UTILS", error.message);
     return {
       message: "Failed! Unable to upload to S3",
       error: error.message,
@@ -132,4 +132,83 @@ function uploadToS3(dirname) {
   }
 }
 
-module.exports = { getSignedURL, uploadToS3 };
+async function getObjectsFromS3(dirname) {
+  try {
+    const s3 = new AWS.S3({
+      // endpoint: "s3-ap-south-1.amazonaws.com",
+      accessKeyId: "AKIAZDHWLVNJUUTAGIWY",
+      secretAccessKey: "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",
+      Bucket: "ivs-edu-book-pdf-v1",
+      signatureVersion: "v4",
+      region: "ap-south-1",
+    });
+    const params = {
+      Bucket: "ivs-edu-book-pdf-v1",
+      Prefix: `${dirname}/`,
+      // ContentType: "png",
+    };
+    let promiseArr = [];
+
+    return new Promise((resolve, reject) => {
+      s3.listObjectsV2(params, (err, data) => {
+        if (err) {
+          reject({
+            message: "Unable to Fetch List!",
+            error: err.message,
+            data: [],
+          });
+        }
+        console.log("data", data);
+        if (data.Contents && data.Contents.length > 0) {
+          data.Contents.map((data) => {
+            console.log("Fetching Files");
+            const params = { Bucket: "ivs-edu-book-pdf-v1", Key: data.Key };
+            promiseArr.push(s3.getObject(params).promise());
+          });
+          console.log("promiseArr", promiseArr);
+          resolve(Promise.all(promiseArr));
+        }
+      });
+    });
+  } catch (error) {
+    return {
+      message: error.message,
+      error: error.message,
+      data: [],
+    };
+  }
+}
+
+async function uploadOneObjectToS3(dirname, filename) {
+  try {
+    const buffer = fs.readFileSync(`${assetPath}/${dirname}/${filename}`);
+    const s3 = new AWS.S3({
+      // endpoint: "s3-ap-south-1.amazonaws.com",
+      accessKeyId: "AKIAZDHWLVNJUUTAGIWY",
+      secretAccessKey: "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",
+      Bucket: "ivs-edu-book-pdf-v1",
+      signatureVersion: "v4",
+      region: "ap-south-1",
+    });
+    const params = {
+      Bucket: "ivs-edu-book-pdf-v1",
+      Key: `${dirname}/${filename}`,
+      Body: buffer,
+      // ContentType: "png",
+    };
+    return s3.upload(params).promise();
+  } catch (error) {
+    return {
+      message: "uploadOneObjectToS3 Failed!",
+      error: error.message,
+      data: [],
+    };
+  }
+}
+
+module.exports = {
+  getSignedURL,
+  uploadToS3,
+  getObjectsFromS3,
+  uploadOneObjectToS3,
+};

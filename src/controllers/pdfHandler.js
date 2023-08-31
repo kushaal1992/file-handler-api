@@ -165,21 +165,4 @@ async function pdfToImg(filename) {
 //   }
 // }
 
-async function imgToPDFConverter() {
-  try {
-    const pages = [
-      fs.readFileSync("/home/acc/ACC_Projects/file-handler-api/sample1.png"),
-      fs.readFileSync("/home/acc/ACC_Projects/file-handler-api/sample2.png"),
-      fs.readFileSync("/home/acc/ACC_Projects/file-handler-api/sample3.png"),
-      fs.readFileSync("/home/acc/ACC_Projects/file-handler-api/sample4.png"),
-      fs.readFileSync("/home/acc/ACC_Projects/file-handler-api/sample5.png"),
-    ];
-    console.log("Converting");
-    imgToPDF(pages, imgToPDF.sizes.A4).pipe(fs.createWriteStream("output.pdf"));
-    console.log("Converted");
-  } catch (error) {
-    console.log("pdfHandler --> imgToPDF --> error --> ", error.message);
-  }
-}
-
-module.exports = { pdfToImg, imgToPDFConverter };
+module.exports = { pdfToImg };
