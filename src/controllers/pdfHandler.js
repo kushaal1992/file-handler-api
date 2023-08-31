@@ -94,6 +94,7 @@ async function pdfToImg(filename) {
     const pdfPath = path.resolve(__dirname, `${assetPath}/${filename}.pdf`);
     console.log("pdfPath", pdfPath);
     return new Promise((resolve, reject) => {
+      console.log("Converting")
       fromPath(pdfPath, options)
         .bulk(-1, { responseType: "image" })
         .then((pdfToImgRes) => {
@@ -101,7 +102,7 @@ async function pdfToImg(filename) {
             message: "Success! PDF Converted To Images",
             data: pdfToImgRes,
           });
-        })
+        }).catch((err) => console.log("err", err.message))
         .catch((err) => {
           return reject({
             message: `Failed! Unable to convert Page `,
