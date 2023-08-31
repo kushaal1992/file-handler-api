@@ -6,6 +6,7 @@ const AWS = require("aws-sdk");
 
 const signedURLRoute = require("./src/routes/signedS3Url");
 const uploadRoute = require("./src/routes/uploadPDF");
+const saveImageS3Route = require("./src/routes/saveImageS3");
 
 const pdfToImg = require("./src/controllers/pdfHandler").pdfToImg;
 
@@ -20,6 +21,7 @@ app.use(cors({ origin: "*" }));
 
 app.use("/", signedURLRoute);
 app.use("/", uploadRoute);
+app.use("/", saveImageS3Route)
 
 process.on("uncaughtException", function (err) {
   console.log(err);
