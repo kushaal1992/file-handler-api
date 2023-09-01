@@ -86,12 +86,13 @@ async function pdfToImg(filename) {
       fs.mkdirSync(`${assetPath}/${filename}`);
     }
     const options = {
-      density: 100,
+      quality: 100,
+      density: 300,
       saveFilename: filename,
       savePath: `${assetPath}/${filename}`,
       format: "png",
-      width: 600,
-      height: 600,
+      width: 595,
+      height: 842,
     };
 
     const pdfPath = path.resolve(__dirname, `${assetPath}/${filename}.pdf`);
