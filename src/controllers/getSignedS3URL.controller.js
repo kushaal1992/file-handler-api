@@ -3,9 +3,11 @@ const s3Utils = require("../utils/awsS3");
 function getSignedURL(req, res) {
   try {
     const { filename } = req.query;
+    const key = `${filename.split(".")[0]}/${filename}`;
+    console.log("key", key)
     if (filename) {
       s3Utils
-        .getSignedURL(filename)
+        .getSignedURL(key)
         .then((data) => {
           return res.status(200).json({
             status: 200,

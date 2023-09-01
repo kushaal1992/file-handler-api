@@ -9,9 +9,14 @@ async function imgToPDFConverter(imageArr, filename) {
     const pages = imageArr.map((image) => image.Body);
 
     console.log("Converting To PDF");
-    return imgToPDF(pages, imgToPDF.sizes.A4).pipe(
+    console.log(`${assetPath}/${filename}/${filename}_final.pdf`);
+    if (!fs.existsSync(`${assetPath}/${filename}`)) {
+      fs.mkdirSync(`${assetPath}/${filename}`);
+    }
+    const write = imgToPDF(pages, imgToPDF.sizes.A4).pipe(
       fs.createWriteStream(`${assetPath}/${filename}/${filename}_final.pdf`)
     );
+    return write;
   } catch (error) {
     return {
       message: "imgToPDFConverter Failed!",

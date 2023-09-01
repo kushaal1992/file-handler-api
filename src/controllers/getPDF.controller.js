@@ -2,19 +2,20 @@ const imgToPDFConverter = require("../utils/fileConverter").imgToPDFConverter;
 const getObjectsFromS3 = require("../utils/awsS3").getObjectsFromS3;
 const s3Utils = require("../utils/awsS3");
 
+// V2
 async function getPDF(req, res) {
   try {
     const { dirname } = req.query;
     const objects = await getObjectsFromS3(dirname);
     console.log(objects);
-    const getPDFResponse = await imgToPDFConverter(objects, dirname);
-    console.log("getPDF Response", getPDFResponse);
-    if (getPDFResponse && getPDFResponse.path) {
-      const filename =
-        getPDFResponse.path.split("/")[
-          getPDFResponse.path.split("/").length - 1
-        ];
+    const PDFResponse = await imgToPDFConverter(objects, dirname);
+    console.log("getPDF Response", PDFResponse);
+    PDFResponse.on("finish", async () => {
+      console.log("File Written")
+      const filename = `${dirname}_final.pdf`;
+      console.log("getPDF --> filename", filename);
       const uploadRes = await s3Utils.uploadOneObjectToS3(dirname, filename);
+      console.log("uploadRes", uploadRes);
       if (uploadRes && uploadRes.Location) {
         const key = `${dirname}/${filename}`;
         const signedURLResponse = await s3Utils.getSignedURL(key);
@@ -28,18 +29,12 @@ async function getPDF(req, res) {
         }
       } else {
         return res.status(400).json({
-            message: "getPDF Failed!",
-            error: uploadRes.error,
-            data: [],
-          });
+          message: "getPDF Failed!",
+          error: uploadRes.error,
+          data: [],
+        });
       }
-    } else {
-      return res.status(400).json({
-        message: "getPDF Failed!",
-        error: getPDFResponse.error,
-        data: [],
-      });
-    }
+    });
   } catch (error) {
     console.log("errpor", error.message);
     return res.status(500).json({

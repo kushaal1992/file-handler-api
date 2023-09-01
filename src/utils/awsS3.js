@@ -16,7 +16,7 @@ function getSignedURL(filename) {
     });
     const params = {
       Bucket: "ivs-edu-book-pdf-v1",
-      Key: filename,
+      Key: `${filename}`,
       Expires: 60 * 5,
     };
     return new Promise((resolve, reject) => {
@@ -167,6 +167,12 @@ async function getObjectsFromS3(dirname) {
           });
           console.log("promiseArr", promiseArr);
           resolve(Promise.all(promiseArr));
+        } else {
+          reject({
+            message: "Invalid Key name",
+            error: "File not found",
+            data: [],
+          });
         }
       });
     });
@@ -181,7 +187,11 @@ async function getObjectsFromS3(dirname) {
 
 async function uploadOneObjectToS3(dirname, filename) {
   try {
+    console.log("`${assetPath}/${dirname}/${filename}`", `${assetPath}/${dirname}/${filename}`)
+    
     const buffer = fs.readFileSync(`${assetPath}/${dirname}/${filename}`);
+    console.log("buffer", buffer)
+
     const s3 = new AWS.S3({
       // endpoint: "s3-ap-south-1.amazonaws.com",
       accessKeyId: "AKIAZDHWLVNJUUTAGIWY",
